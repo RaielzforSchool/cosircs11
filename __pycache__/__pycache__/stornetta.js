@@ -19,24 +19,6 @@ class LinearExpression {
   }
 
   updateEquation() {
-    switch (this.leftop) {
-      case '+': // No change needed for '+'
-        break;
-      case '-': 
-        this.leftnum = this.leftnum * -1; // Correctly negate the left number
-        this.leftop = ''; // Clear the left operator after negation
-        break;
-    }
-    
-    switch (this.rightop) {
-      case '+': // No change needed for '+'
-        break;
-      case '-': 
-        this.rightnum = this.rightnum * -1; // Correctly negate the right number
-        this.rightop = ''; // Clear the right operator after negation
-        break;
-    }
-    
     this.equation = `${this.leftcoefficient}${this.leftvar} ${this.leftop} ${this.leftnum} = ${this.rightcoefficient}${this.rightvar} ${this.rightop} ${this.rightnum}`;
   }
 
@@ -52,7 +34,6 @@ class LinearExpression {
       let rightop = getRandomElement(possOps);
       let rightvar = 'x';
       let leftvar = 'x';
-      
       if (leftcoefficient !== 1 && rightcoefficient !== 1) {
         this.leftvar = leftvar;
         this.leftcoefficient = leftcoefficient;
@@ -136,7 +117,6 @@ class LinearExpression {
 }
 
 function performOperation(expression, op, opnum) {
-  expression.updateEquation();
   opnum = Number(opnum);
   switch (op) {
     case '+':
@@ -167,16 +147,15 @@ function askQuestion(query) {
 
 async function main() {
   let keepRunning = true;
-  let count = 0;
 
+  let count=0;
   while (keepRunning) {
     let expression = new LinearExpression();
     let equation = expression.createRandomEquation();
-
-    if (count === 0) {
+    if(count===0){
       console.log(expression.equation);
-      count++;
     }
+    
 
     const operation = await askQuestion('What would you like to do: +, -, x, /\n');
     const operationNum = await askQuestion(`By what number: ${expression.returnVarsAsArr()}\n`);
