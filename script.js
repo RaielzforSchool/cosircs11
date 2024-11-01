@@ -129,23 +129,21 @@ function performOperation() {
     displayEquation(userEquation);
 
    // Check if the equation is reduced to x = [correct answer] or [correct answer] = x
-   const equationSolvedForm1 = userEquation.a === 1 && userEquation.c === 0 && userEquation.b === equation.x && userEquation.d === 0;
-   const equationSolvedForm2 = userEquation.a === 0 && userEquation.c === 1 && userEquation.b === 0 && userEquation.d === equation.x;
-
-   if (equationSolvedForm1 || equationSolvedForm2) {
-       document.getElementById("equation").innerText = `x = ${equation.x}`;
-       document.getElementById("status").innerText = `Correct! The solution is x = ${equation.x}.`;
-   } else {
-       document.getElementById("status").innerText = "Not done yet!";
-   }
-
-    // Check if the equation has been reduced to the form x = solution
-    if (simplifiedLeftSide === 1 && simplifiedRightSide === equation.x ||simplifiedRightSide === 1 && simplifiedLeftSide === equation.x ) {
+   let solved = false;
+    if ((userEquation.a === 1 && userEquation.c === 0 && userEquation.b === 0) || (userEquation.a === 0 && userEquation.c === 1 && userEquation.d === 0)) {
+       solved = true;
+    }
+    if (solved) {
         document.getElementById("equation").innerText = `x = ${equation.x}`;
         document.getElementById("status").innerText = `Correct! The solution is x = ${equation.x}.`;
-    } else {
+        return;
+    }
+    else {
         document.getElementById("status").innerText = "Not done yet!";
     }
+
+     // Update the equation display
+     displayEquation(userEquation);
 
     // Clear input
     document.getElementById("operationInput").value = '';
