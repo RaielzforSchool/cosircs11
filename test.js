@@ -21,27 +21,31 @@ function generateEquation() {
 
 // Function to display the equation
 function displayEquation(equation) {
+    // Format the left side (a * x + b)
     let leftSide = '';
     if (equation.a !== 0) {
-        leftSide += (equation.a === 1 ? 'x' : `${equation.a}x`);
+        leftSide += (equation.a === 1 ? 'x' : `${equation.a}x`); // Show 'x' for a = 1
     }
     if (equation.b !== 0) {
         leftSide += (equation.b > 0 ? ` + ${equation.b}` : ` - ${Math.abs(equation.b)}`);
     }
 
+    // Format the right side (c * x + d)
     let rightSide = '';
     if (equation.c !== 0) {
-        rightSide += (equation.c === 1 ? 'x' : `${equation.c}x`);
+        rightSide += (equation.c === 1 ? 'x' : `${equation.c}x`); // Show 'x' for c = 1
     }
     if (equation.d !== 0) {
         rightSide += (equation.d > 0 ? ` + ${equation.d}` : ` - ${Math.abs(equation.d)}`);
     }
 
+    // If there's nothing on either side, default to 0
     if (leftSide === '') leftSide = '0';
     if (rightSide === '') rightSide = '0';
 
     document.getElementById('equation').innerText = `${leftSide} = ${rightSide}`;
 }
+
 
 // Initialize equation and set up display
 let equation = generateEquation();
@@ -49,81 +53,103 @@ let userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d 
 displayEquation(userEquation);
 
 // Function to handle user operations
-function performOperation(operator) {
+function performOperation() {
     const input = document.getElementById("operationInput").value.trim();
-    
-    if (!input) {
-        document.getElementById("status").innerText = "Please enter a valid number or term.";
+    const parts = input.split(' ');
+
+    if (!parts[0] || (!['subtract', 'add'].includes(parts[0].toLowerCase()) && isNaN(parts[1]))) {
+        document.getElementById("status").innerText = "Invalid input. Use 'add [coefficient]x' or 'subtract [coefficient]x', or perform regular operations like 'add', 'subtract', 'multiply', 'divide' followed by a number.";
         return;
     }
 
-    // Check if input contains 'x' (it's a term like 2x)
-    let isTerm = input.includes('x');
-    let coefficient = isTerm ? input.replace('x', '') : input;
-    coefficient = coefficient === '' ? 1 : parseFloat(coefficient);
-
-    if (isNaN(coefficient)) {
-        document.getElementById("status").innerText = "Invalid input. Please try again.";
-        return;
-    }
-
-    // Apply operation based on input and the selected operator
-    switch (operator) {
-        case '+':
-            if (isTerm) {
-                userEquation.a += coefficient;
-                userEquation.c += coefficient;
-            } else {
-                userEquation.b += coefficient;
-                userEquation.d += coefficient;
-            }
-            break;
-        case '-':
-            if (isTerm) {
-                userEquation.a -= coefficient;
-                userEquation.c -= coefficient;
-            } else {
-                userEquation.b -= coefficient;
-                userEquation.d -= coefficient;
-            }
-            break;
-        case '*':
-            userEquation.a *= coefficient;
-            userEquation.b *= coefficient;
-            userEquation.c *= coefficient;
-            userEquation.d *= coefficient;
-            break;
-        case '/':
-            if (coefficient === 0) {
-                document.getElementById("status").innerText = "Cannot divide by zero!";
-                return;
-            }
-            userEquation.a /= coefficient;
-            userEquation.b /= coefficient;
-            userEquation.c /= coefficient;
-            userEquation.d /= coefficient;
-            break;
-        default:
-            document.getElementById("status").innerText = "Invalid operation.";
+    // Handle input like "add 2x" or "subtract x"
+    if (parts.length === 2 && (parts[1].endsWith('x') || parts[1] === 'x')) {
+        const operation = parts[0].toLowerCase();
+        let coefficient = parts[1].replace('x', ''); // Extract the coefficient part (remove 'x')
+        
+        // If the coefficient is empty, default to 1 (e.g., "subtract x" or "add x")
+        coefficient = coefficient === '' ? 1 : parseInt(coefficient, 10);
+        
+        if (isNaN(coefficient)) {
+            document.getElementById("status").innerText = "Invalid coefficient. Please try again.";
             return;
+        }
+
+        // Perform the operation based on 'add' or 'subtract'
+        if (operation === 'subtract') {
+            userEquation.a -= coefficient;
+            userEquation.c -= coefficient;
+        } else if (operation === 'add') {
+            userEquation.a += coefficient;
+            userEquation.c += coefficient;
+        }
+
+    } else {
+        // Handle regular operations (add, subtract, multiply, divide) followed by a number
+        const operation = parts[0];
+        const num = parseInt(parts[1], 10);
+
+        if (isNaN(num)) {
+            document.getElementById("status").innerText = "Invalid number. Please try again.";
+            return;
+        }
+
+        switch (operation.toLowerCase()) {
+            case 'add':
+                userEquation.b += num;
+                userEquation.d += num;
+                break;
+            case 'subtract':
+                userEquation.b -= num;
+                userEquation.d -= num;
+                break;
+            case 'multiply':
+                userEquation.a *= num;
+                userEquation.b *= num;
+                userEquation.c *= num;
+                userEquation.d *= num;
+                break;
+            case 'divide':
+                if (num === 0) {
+                    document.getElementById("status").innerText = "Cannot divide by zero!";
+                    return;
+                }
+                userEquation.a /= num;
+                userEquation.b /= num;
+                userEquation.c /= num;
+                userEquation.d /= num;
+                break;
+            default:
+                document.getElementById("status").innerText = "Invalid operation. Try again.";
+                return;
+        }
     }
 
     // Update the equation display
     displayEquation(userEquation);
 
-    // Check if equation is solved (x = solution form)
-    const equationSolvedForm1 = userEquation.a === 1 && userEquation.c === 0 && userEquation.b === equation.x && userEquation.d === 0;
-    const equationSolvedForm2 = userEquation.a === 0 && userEquation.c === 1 && userEquation.b === 0 && userEquation.d === equation.x;
-
-    if (equationSolvedForm1 || equationSolvedForm2) {
+   // Check if the equation is reduced to x = [correct answer] or [correct answer] = x
+   let solved = false;
+    if ((userEquation.a === 1 && userEquation.c === 0 && userEquation.b === 0) || (userEquation.a === 0 && userEquation.c === 1 && userEquation.d === 0)) {
+       solved = true;
+    }
+    if (solved) {
         document.getElementById("equation").innerText = `x = ${equation.x}`;
         document.getElementById("status").innerText = `Correct! The solution is x = ${equation.x}.`;
-    } else {
+        return;
+    }
+    else {
         document.getElementById("status").innerText = "Not done yet!";
     }
 
+     // Update the equation display
+     displayEquation(userEquation);
+
     // Clear input
     document.getElementById("operationInput").value = '';
+
+    // Update the equation display
+    displayEquation(userEquation);
 }
 
 // Function to generate a new equation and reset the game
