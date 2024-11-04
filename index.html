@@ -8,11 +8,22 @@
 </head>
 <body>
     <div id="app">
-        <h1>Algebra Equation Solver Extremely Extraordinary and SUPERRRRRRR awesome</h1>
+        <h1>Algebra Equation Solver</h1>
         <p id="equation"></p>
+        
+        <!-- Input field and main control buttons -->
         <input type="text" id="operationInput" placeholder="Enter operation (e.g., add 5, subtract 2x)">
         <button onclick="performOperation()">Perform Operation</button>
         <button onclick="generateNewEquation()">New Equation</button>
+        
+        <!-- New Operation Buttons -->
+        <div id="operation-buttons">
+            <button onclick="insertOperation('add')">Add</button>
+            <button onclick="insertOperation('subtract')">Subtract</button>
+            <button onclick="insertOperation('multiply')">Multiply</button>
+            <button onclick="insertOperation('divide')">Divide</button>
+        </div>
+        
         <p id="status"></p>
     </div>
     <script src="script.js"></script>
@@ -24,6 +35,13 @@
                 performOperation(); // Trigger the Perform Operation function
             }
         });
+
+        // Function to insert operation text into the input without submitting
+        function insertOperation(operation) {
+            const input = document.getElementById("operationInput");
+            input.value = operation + ' '; // Insert the operation with a space for user input
+            input.focus(); // Set focus to the input box for convenience
+        }
     </script>
 </body>
 </html>
