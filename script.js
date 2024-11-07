@@ -52,13 +52,18 @@ let equation = generateEquation();
 let userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
 displayEquation(userEquation);
 
+let stepcount = 0;
 // Function to handle user operations
 function performOperation() {
+    
+    stepcount += 1;
+    document.getElementById("StepCounter").innerText = `Step: ${stepcount}`;
     const input = document.getElementById("operationInput").value.trim();
     const parts = input.split(' ');
 
     if (!parts[0] || (!['subtract', 'add'].includes(parts[0].toLowerCase()) && isNaN(parts[1]))) {
         document.getElementById("status").innerText = "Invalid input. Use 'add [coefficient]x' or 'subtract [coefficient]x', or perform regular operations like 'add', 'subtract', 'multiply', 'divide' followed by a number.";
+        stepcount -= 1;
         return;
     }
 
@@ -72,6 +77,7 @@ function performOperation() {
         
         if (isNaN(coefficient)) {
             document.getElementById("status").innerText = "Invalid coefficient. Please try again.";
+            stepcount -= 1;
             return;
         }
 
@@ -91,6 +97,7 @@ function performOperation() {
 
         if (isNaN(num)) {
             document.getElementById("status").innerText = "Invalid number. Please try again.";
+            stepcount -= 1;
             return;
         }
 
@@ -112,6 +119,7 @@ function performOperation() {
             case 'divide':
                 if (num === 0) {
                     document.getElementById("status").innerText = "Cannot divide by zero!";
+                    stepcount -= 1;
                     return;
                 }
                 userEquation.a /= num;
@@ -121,8 +129,11 @@ function performOperation() {
                 break;
             default:
                 document.getElementById("status").innerText = "Invalid operation. Try again.";
+                stepcount -= 1;
                 return;
+        
         }
+        document.getElementById("StepCounter").innerText = `Step: ${stepcount}`;
     }
 
     // Update the equation display
@@ -132,10 +143,12 @@ function performOperation() {
    let solved = false;
     if ((userEquation.a === 1 && userEquation.c === 0 && userEquation.b === 0) || (userEquation.a === 0 && userEquation.c === 1 && userEquation.d === 0)) {
        solved = true;
+       document.getElementById("StepCounter").innerText = `Step: ${stepcount}`;
     }
     if (solved) {
         document.getElementById("equation").innerText = `x = ${equation.x}`;
         document.getElementById("status").innerText = `Correct! The solution is x = ${equation.x}.`;
+        document.getElementById("StepCounter").innerText = `Step: ${stepcount}`;
         return;
     }
     else {
@@ -151,11 +164,15 @@ function performOperation() {
 
 // Function to generate a new equation and reset the game
 function generateNewEquation() {
+    
     equation = generateEquation();
     userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
     displayEquation(userEquation);
     document.getElementById("status").innerText = ''; // Clear status message
     document.getElementById("operationInput").value = ''; // Clear input field
+    stepcount = 0;
+    document.getElementById("StepCounter").innerText = `Step: ${stepcount}`;
+
 }
 function insertOperation(operation) {
     const input = document.getElementById("operationInput");
