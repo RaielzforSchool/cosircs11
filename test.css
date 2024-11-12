@@ -48,3 +48,15 @@ button:hover {
 #operation-buttons {
     margin-top: 20px;
 }
+
+#operation-buttons button {
+    margin: 5px;
+}
+
+#operation-buttons button:nth-child(n+5) { /* Styling only the variable buttons */
+    background-color: #6c757d;
+}
+
+#operation-buttons button:nth-child(n+5):hover {
+    background-color: #5a6268;
+}

@@ -9,7 +9,7 @@
 <body>
     <div id="app">
         <h1>Algebra Equation Solver</h1>
-        <h2>-Cosircs11</h2>
+        <h2>- Cosircs11</h2>
         <p id="equation"></p>
         
         <!-- Input field and main control buttons -->
@@ -17,13 +17,20 @@
         <button onclick="performOperation()">Perform Operation</button>
         <button onclick="generateNewEquation()">New Equation</button>
         
-        <!-- New Operation Buttons -->
         <div id="operation-buttons">
-            <button onclick="insertOperation('add')">Add</button>
-            <button onclick="insertOperation('subtract')">Subtract</button>
-            <button onclick="insertOperation('multiply')">Multiply</button>
-            <button onclick="insertOperation('divide')">Divide</button>
-        </div>
+            <button onclick="insertOperation('add')">+</button>
+            <button onclick="insertOperation('subtract')">-</button>
+            <button onclick="insertOperation('multiply')">×</button>
+            <button onclick="insertOperation('divide')">÷</button>
+            
+            <!-- Dynamic variable buttons -->
+            <button id="btn-a" onclick="insertVariable('a')">a</button>
+            <button id="btn-ax" onclick="insertVariable('ax')">ax</button>
+            <button id="btn-b" onclick="insertVariable('b')">b</button>
+            <button id="btn-cx" onclick="insertVariable('cx')">cx</button>
+            <button id="btn-c" onclick="insertVariable('c')">c</button>
+            <button id="btn-d" onclick="insertVariable('d')">d</button>
+        </div>                
         
         <p id="status"></p>
     </div>
@@ -43,6 +50,18 @@
             input.value = operation + ' '; // Insert the operation with a space for user input
             input.focus(); // Set focus to the input box for convenience
         }
+
+        function updateButtonLabels() {
+        document.getElementById("btn-a").innerText = equation.a;
+        document.getElementById("btn-ax").innerText = `${equation.a}x`;
+        document.getElementById("btn-b").innerText = Math.abs(equation.b);
+        document.getElementById("btn-cx").innerText = `${equation.c}x`;
+        document.getElementById("btn-c").innerText = equation.c;
+        document.getElementById("btn-d").innerText = Math.abs(equation.d);
+    }
+
+    // Call updateButtonLabels when the window loads
+    updateButtonLabels();
     </script>
 </body>
 </html>

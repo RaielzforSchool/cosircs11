@@ -52,104 +52,50 @@ let equation = generateEquation();
 let userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
 displayEquation(userEquation);
 
-// Function to handle user operations
-function performOperation() {
-    const input = document.getElementById("operationInput").value.trim();
-    const parts = input.split(' ');
-
-    if (!parts[0] || (!['subtract', 'add'].includes(parts[0].toLowerCase()) && isNaN(parts[1]))) {
-        document.getElementById("status").innerText = "Invalid input. Use 'add [coefficient]x' or 'subtract [coefficient]x', or perform regular operations like 'add', 'subtract', 'multiply', 'divide' followed by a number.";
-        return;
+// Function to display the equation and update button labels
+function displayEquation(equation) {
+    // Format the left side (a * x + b)
+    let leftSide = '';
+    if (equation.a !== 0) {
+        leftSide += (equation.a === 1 ? 'x' : `${equation.a}x`); // Show 'x' for a = 1
+    }
+    if (equation.b !== 0) {
+        leftSide += (equation.b > 0 ? ` + ${equation.b}` : ` - ${Math.abs(equation.b)}`);
     }
 
-    // Handle input like "add 2x" or "subtract x"
-    if (parts.length === 2 && (parts[1].endsWith('x') || parts[1] === 'x')) {
-        const operation = parts[0].toLowerCase();
-        let coefficient = parts[1].replace('x', ''); // Extract the coefficient part (remove 'x')
-        
-        // If the coefficient is empty, default to 1 (e.g., "subtract x" or "add x")
-        coefficient = coefficient === '' ? 1 : parseInt(coefficient, 10);
-        
-        if (isNaN(coefficient)) {
-            document.getElementById("status").innerText = "Invalid coefficient. Please try again.";
-            return;
-        }
-
-        // Perform the operation based on 'add' or 'subtract'
-        if (operation === 'subtract') {
-            userEquation.a -= coefficient;
-            userEquation.c -= coefficient;
-        } else if (operation === 'add') {
-            userEquation.a += coefficient;
-            userEquation.c += coefficient;
-        }
-
-    } else {
-        // Handle regular operations (add, subtract, multiply, divide) followed by a number
-        const operation = parts[0];
-        const num = parseInt(parts[1], 10);
-
-        if (isNaN(num)) {
-            document.getElementById("status").innerText = "Invalid number. Please try again.";
-            return;
-        }
-
-        switch (operation.toLowerCase()) {
-            case 'add':
-                userEquation.b += num;
-                userEquation.d += num;
-                break;
-            case 'subtract':
-                userEquation.b -= num;
-                userEquation.d -= num;
-                break;
-            case 'multiply':
-                userEquation.a *= num;
-                userEquation.b *= num;
-                userEquation.c *= num;
-                userEquation.d *= num;
-                break;
-            case 'divide':
-                if (num === 0) {
-                    document.getElementById("status").innerText = "Cannot divide by zero!";
-                    return;
-                }
-                userEquation.a /= num;
-                userEquation.b /= num;
-                userEquation.c /= num;
-                userEquation.d /= num;
-                break;
-            default:
-                document.getElementById("status").innerText = "Invalid operation. Try again.";
-                return;
-        }
+    // Format the right side (c * x + d)
+    let rightSide = '';
+    if (equation.c !== 0) {
+        rightSide += (equation.c === 1 ? 'x' : `${equation.c}x`); // Show 'x' for c = 1
+    }
+    if (equation.d !== 0) {
+        rightSide += (equation.d > 0 ? ` + ${equation.d}` : ` - ${Math.abs(equation.d)}`);
     }
 
-    // Update the equation display
-    displayEquation(userEquation);
+    // If there's nothing on either side, default to 0
+    if (leftSide === '') leftSide = '0';
+    if (rightSide === '') rightSide = '0';
 
-   // Check if the equation is reduced to x = [correct answer] or [correct answer] = x
-   let solved = false;
-    if ((userEquation.a === 1 && userEquation.c === 0 && userEquation.b === 0) || (userEquation.a === 0 && userEquation.c === 1 && userEquation.d === 0)) {
-       solved = true;
-    }
-    if (solved) {
-        document.getElementById("equation").innerText = `x = ${equation.x}`;
-        document.getElementById("status").innerText = `Correct! The solution is x = ${equation.x}.`;
-        return;
-    }
-    else {
-        document.getElementById("status").innerText = "Not done yet!";
-    }
+    document.getElementById('equation').innerText = `${leftSide} = ${rightSide}`;
 
-     // Update the equation display
-     displayEquation(userEquation);
-
-    // Clear input
-    document.getElementById("operationInput").value = '';
+    // Update button labels with current values
+    document.getElementById("btn-a").innerText = equation.a;
+    document.getElementById("btn-ax").innerText = `${equation.a}x`;
+    document.getElementById("btn-b").innerText = Math.abs(equation.b);
+    document.getElementById("btn-cx").innerText = `${equation.c}x`;
+    document.getElementById("btn-c").innerText = equation.c;
+    document.getElementById("btn-d").innerText = Math.abs(equation.d);
 }
 
-// Function to generate a new equation and reset the game
+// Update insertVariable function to use button values directly
+function insertVariable(variable) {
+    const input = document.getElementById("operationInput");
+    const value = document.getElementById(`btn-${variable}`).innerText; // Get button text as value
+    input.value += value; // Append the variable text to the current input value
+    input.focus(); // Set focus to the input box for convenience
+}
+
+// Call displayEquation when generating a new equation
 function generateNewEquation() {
     equation = generateEquation();
     userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
@@ -157,8 +103,16 @@ function generateNewEquation() {
     document.getElementById("status").innerText = ''; // Clear status message
     document.getElementById("operationInput").value = ''; // Clear input field
 }
+
 function insertOperation(operation) {
     const input = document.getElementById("operationInput");
     input.value = operation + ' '; // Insert the operation with a space for user input
+    input.focus(); // Set focus to the input box for convenience
+}
+
+// Function to insert a variable text into the input field
+function insertVariable(variable) {
+    const input = document.getElementById("operationInput");
+    input.value += variable; // Append the variable text to the current input value
     input.focus(); // Set focus to the input box for convenience
 }
