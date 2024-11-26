@@ -45,57 +45,65 @@ function displayEquation(equation) {
 
     document.getElementById('equation').innerText = `${leftSide} = ${rightSide}`;
 }
+// Algebra Solver Logic
+let currentEquation = { a: 3, b: 2, c: 4, d: -5 }; // Default example equation
+let prevEquation = "";
 
-
-// Initialize equation and set up display
-let equation = generateEquation();
-let userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
-displayEquation(userEquation);
-
-// Function to display the equation and update button labels
-function displayEquation(equation) {
-    // Format the left side (a * x + b)
-    let leftSide = '';
-    if (equation.a !== 0) {
-        leftSide += (equation.a === 1 ? 'x' : `${equation.a}x`); // Show 'x' for a = 1
-    }
-    if (equation.b !== 0) {
-        leftSide += (equation.b > 0 ? ` + ${equation.b}` : ` - ${Math.abs(equation.b)}`);
-    }
-
-    // Format the right side (c * x + d)
-    let rightSide = '';
-    if (equation.c !== 0) {
-        rightSide += (equation.c === 1 ? 'x' : `${equation.c}x`); // Show 'x' for c = 1
-    }
-    if (equation.d !== 0) {
-        rightSide += (equation.d > 0 ? ` + ${equation.d}` : ` - ${Math.abs(equation.d)}`);
-    }
-
-    // If there's nothing on either side, default to 0
-    if (leftSide === '') leftSide = '0';
-    if (rightSide === '') rightSide = '0';
-
-    document.getElementById('equation').innerText = `${leftSide} = ${rightSide}`;
-
-    // Update button labels with current values
-    document.getElementById("btn-a").innerText = equation.a;
-    document.getElementById("btn-ax").innerText = `${equation.a}x`;
-    document.getElementById("btn-b").innerText = Math.abs(equation.b);
-    document.getElementById("btn-cx").innerText = `${equation.c}x`;
-    document.getElementById("btn-c").innerText = equation.c;
-    document.getElementById("btn-d").innerText = Math.abs(equation.d);
+function displayEquation() {
+  const { a, b, c, d } = currentEquation;
+  const equationString = `${a}x + ${b} = ${c}x + ${d}`;
+  document.getElementById("main-equation").innerText = `Equation: ${equationString}`;
 }
 
-// Update insertVariable function to use button values directly
-function insertVariable(variable) {
-    const input = document.getElementById("operationInput");
-    const value = document.getElementById(`btn-${variable}`).innerText; // Get button text as value
-    input.value += value; // Append the variable text to the current input value
-    input.focus(); // Set focus to the input box for convenience
+function updateHistory() {
+  document.getElementById("prev-equation").innerText = `Previous Equation: ${prevEquation}`;
 }
 
-// Call displayEquation when generating a new equation
+function setOperation(side, operation) {
+    const operationBox = document.getElementById(`${side}-operation`);
+    operationBox.value = operation; // Set the operation symbol directly  
+}
+
+function applyOperation() {
+  const leftOp = document.getElementById("left-operation").value;
+  const leftValue = parseInt(document.getElementById("left-value").value) || 0;
+  const rightOp = document.getElementById("right-operation").value;
+  const rightValue = parseInt(document.getElementById("right-value").value) || 0;
+
+  prevEquation = `${currentEquation.a}x + ${currentEquation.b} = ${currentEquation.c}x + ${currentEquation.d}`;
+
+  if (leftOp && leftValue) {
+    applySideOperation('left', leftOp, leftValue);
+  }
+  if (rightOp && rightValue) {
+    applySideOperation('right', rightOp, rightValue);
+  }
+
+  displayEquation();
+  updateHistory();
+  clearInputs();
+}
+
+function applySideOperation(side, op, value) {
+  if (side === 'left') {
+    currentEquation.a = operate(currentEquation.a, op, value);
+    currentEquation.b = operate(currentEquation.b, op, value);
+  } else if (side === 'right') {
+    currentEquation.c = operate(currentEquation.c, op, value);
+    currentEquation.d = operate(currentEquation.d, op, value);
+  }
+}
+
+function operate(term, op, value) {
+  switch (op) {
+    case '+': return term + value;
+    case '-': return term - value;
+    case '*': return term * value;
+    case '/': return Math.floor(term / value); // Integer division
+    default: return term;
+  }
+}
+
 function generateNewEquation() {
     equation = generateEquation();
     userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
@@ -104,15 +112,16 @@ function generateNewEquation() {
     document.getElementById("operationInput").value = ''; // Clear input field
 }
 
-function insertOperation(operation) {
-    const input = document.getElementById("operationInput");
-    input.value = operation + ' '; // Insert the operation with a space for user input
-    input.focus(); // Set focus to the input box for convenience
+function clearInputs() {
+  document.getElementById("left-operation").value = '';
+  document.getElementById("left-value").value = '';
+  document.getElementById("right-operation").value = '';
+  document.getElementById("right-value").value = '';
 }
 
-// Function to insert a variable text into the input field
-function insertVariable(variable) {
-    const input = document.getElementById("operationInput");
-    input.value += variable; // Append the variable text to the current input value
-    input.focus(); // Set focus to the input box for convenience
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// Initialize
+displayEquation();

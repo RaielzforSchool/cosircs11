@@ -1,67 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algebra Equation Solver</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Algebra Solver</title>
+  <style>
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin-top: 50px;
+      text-align: center;
+    }
+    .equation-display {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .equation-history {
+      font-size: 16px;
+      color: gray;
+      margin: 10px 0;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .operation-box {
+      width: 50px;
+      height: 30px;
+      margin: 5px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
 </head>
 <body>
-    <div id="app">
-        <h1>Algebra Equation Solver</h1>
-        <h2>- Cosircs11</h2>
-        <p id="equation"></p>
-        
-        <!-- Input field and main control buttons -->
-        <input type="text" id="operationInput" placeholder="Enter operation (e.g., add 5, subtract 2x)">
-        <button onclick="performOperation()">Perform Operation</button>
-        <button onclick="generateNewEquation()">New Equation</button>
-        
-        <div id="operation-buttons">
-            <button onclick="insertOperation('add')">+</button>
-            <button onclick="insertOperation('subtract')">-</button>
-            <button onclick="insertOperation('multiply')">×</button>
-            <button onclick="insertOperation('divide')">÷</button>
-            
-            <!-- Dynamic variable buttons -->
-            <button id="btn-a" onclick="insertVariable('a')">a</button>
-            <button id="btn-ax" onclick="insertVariable('ax')">ax</button>
-            <button id="btn-b" onclick="insertVariable('b')">b</button>
-            <button id="btn-cx" onclick="insertVariable('cx')">cx</button>
-            <button id="btn-c" onclick="insertVariable('c')">c</button>
-            <button id="btn-d" onclick="insertVariable('d')">d</button>
-        </div>                
-        
-        <p id="status"></p>
-    </div>
-    <script src="script.js"></script>
-    <script>
-        // Add Enter key listener to the input field
-        document.getElementById("operationInput").addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault(); // Prevent any default action, if needed
-                performOperation(); // Trigger the Perform Operation function
-            }
-        });
+  <div class="container">
+    <div class="equation-history" id="prev-equation">Previous Equation: None</div>
+    <div class="equation-display" id="main-equation">Equation: ax + b = cx + d</div>
 
-        // Function to insert operation text into the input without submitting
-        function insertOperation(operation) {
-            const input = document.getElementById("operationInput");
-            input.value = operation + ' '; // Insert the operation with a space for user input
-            input.focus(); // Set focus to the input box for convenience
-        }
+    <div class="controls">
+        <!-- Left Side -->
+        <div class="control-group">
+          <input type="text" id="left-operation" class="operation-box" disabled placeholder="Op">
+          <input type="text" id="left-value" class="operation-box" placeholder="Value">
+          <div>
+            <button onclick="setOperation('left', '+')">+</button>
+            <button onclick="setOperation('left', '-')">-</button>
+            <button onclick="setOperation('left', '*')">×</button>
+            <button onclick="setOperation('left', '/')">÷</button>
+          </div>
+        </div>
+      
+        <!-- Go Button -->
+        <div>
+          <button onclick="applyOperation()">Go!</button>
+          <button onclick="generateNewEquation()">New Equation</button>
+        </div>
+      
+        <!-- Right Side -->
+        <div class="control-group">
+          <input type="text" id="right-operation" class="operation-box" disabled placeholder="Op">
+          <input type="text" id="right-value" class="operation-box" placeholder="Value">
+          <div>
+            <button onclick="setOperation('right', '+')">+</button>
+            <button onclick="setOperation('right', '-')">-</button>
+            <button onclick="setOperation('right', '*')">×</button>
+            <button onclick="setOperation('right', '/')">÷</button>
+          </div>
+        </div>
+      </div>      
+  </div>
 
-        function updateButtonLabels() {
-        document.getElementById("btn-a").innerText = equation.a;
-        document.getElementById("btn-ax").innerText = `${equation.a}x`;
-        document.getElementById("btn-b").innerText = Math.abs(equation.b);
-        document.getElementById("btn-cx").innerText = `${equation.c}x`;
-        document.getElementById("btn-c").innerText = equation.c;
-        document.getElementById("btn-d").innerText = Math.abs(equation.d);
-    }
-
-    // Call updateButtonLabels when the window loads
-    updateButtonLabels();
-    </script>
+  <script src="solver.js"></script>
 </body>
 </html>

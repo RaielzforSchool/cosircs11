@@ -157,6 +157,7 @@ function generateNewEquation() {
     document.getElementById("status").innerText = ''; // Clear status message
     document.getElementById("operationInput").value = ''; // Clear input field
 }
+
 function insertOperation(operation) {
     const input = document.getElementById("operationInput");
     input.value = operation + ' '; // Insert the operation with a space for user input
