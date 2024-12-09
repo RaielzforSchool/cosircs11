@@ -53,9 +53,6 @@ function displayEquation(equation) {
     document.getElementById('equation').innerText = `${leftSide} = ${rightSide}`;
 }
 
-
-
-
 // Initialize equation and set up display
 let equation = generateEquation();
 let userEquation = { a: equation.a, b: equation.b, c: equation.c, d: equation.d };
